@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#7a9e8e">
+<title>ゼオスキン おうち確認ガイド</title>
+<style>
+  :root{
+    --bg:#f6f4ef; --card:#ffffff; --ink:#33312e; --sub:#7c756c;
+    --accent:#7a9e8e; --accent-d:#5e8071; --line:#e7e2d8; --note:#9a8f80;
+    --warn-bg:#fdf4ec; --warn-bd:#e9c9a8; --tip-bg:#eef3ef; --tip-bd:#c8ddcf;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{
+    margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;
+    line-height:1.7;padding-bottom:90px;
+  }
+  header{
+    background:linear-gradient(135deg,var(--accent),var(--accent-d));
+    color:#fff;padding:22px 18px 18px;position:sticky;top:0;z-index:10;
+    box-shadow:0 2px 10px rgba(0,0,0,.08);
+  }
+  header h1{margin:0 0 4px;font-size:19px;font-weight:700}
+  header p{margin:0;font-size:12.5px;opacity:.92}
+  .bar-wrap{margin-top:14px;background:rgba(255,255,255,.28);border-radius:20px;height:9px;overflow:hidden}
+  .bar{height:100%;width:0;background:#fff;border-radius:20px;transition:width .35s ease}
+  .bar-txt{font-size:12px;margin-top:6px;text-align:right;opacity:.95}
+  main{max-width:560px;margin:0 auto;padding:16px 14px}
+  .lead{
+    background:#fff;border:1px solid var(--line);border-radius:14px;
+    padding:14px 16px;font-size:13.5px;color:var(--sub);margin-bottom:16px;
+  }
+  section{
+    background:var(--card);border:1px solid var(--line);border-radius:16px;
+    margin-bottom:14px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.03);
+  }
+  .sec-head{
+    display:flex;align-items:center;gap:10px;padding:14px 16px;cursor:pointer;
+    user-select:none;
+  }
+  .sec-num{
+    flex:none;width:26px;height:26px;border-radius:50%;background:var(--accent);
+    color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;
+  }
+  .sec-title{font-size:15.5px;font-weight:700;flex:1}
+  .sec-done{font-size:11px;color:var(--accent-d);font-weight:700;background:var(--tip-bg);
+    padding:2px 8px;border-radius:10px;white-space:nowrap}
+  .chev{flex:none;color:var(--note);transition:transform .25s;font-size:13px}
+  section.collapsed .body{display:none}
+  section.collapsed .chev{transform:rotate(-90deg)}
+  .body{padding:0 16px 8px}
+  .steps{
+    background:var(--tip-bg);border:1px solid var(--tip-bd);border-radius:12px;
+    padding:10px 12px;margin:6px 0 12px;font-size:13.5px;
+  }
+  .steps b{color:var(--accent-d)}
+  .steps .note{display:block;font-size:12px;color:var(--note);margin:1px 0 8px;padding-left:2px}
+  .steps ol{margin:4px 0;padding-left:22px}
+  .steps li{margin-bottom:3px}
+  .warn{background:var(--warn-bg);border:1px solid var(--warn-bd);border-radius:12px;
+    padding:10px 12px;margin:6px 0 12px;font-size:13px}
+  .warn b{color:#c47b3f}
+  label.chk{
+    display:flex;gap:11px;align-items:flex-start;padding:11px 4px;
+    border-bottom:1px solid var(--line);cursor:pointer;
+  }
+  label.chk:last-child{border-bottom:none}
+  label.chk input{display:none}
+  .box{
+    flex:none;width:23px;height:23px;border:2px solid var(--accent);border-radius:7px;
+    margin-top:1px;display:flex;align-items:center;justify-content:center;
+    transition:background .15s,border-color .15s;
+  }
+  .box svg{width:14px;height:14px;opacity:0;transform:scale(.5);transition:.15s}
+  label.chk input:checked + .box{background:var(--accent);border-color:var(--accent)}
+  label.chk input:checked + .box svg{opacity:1;transform:scale(1)}
+  .ctxt{font-size:14px;flex:1}
+  label.chk input:checked ~ .ctxt{color:var(--note);text-decoration:line-through}
+  .ctxt .sub{display:block;font-size:12px;color:var(--note);margin-top:2px;text-decoration:none!important}
+  .done-banner{
+    display:none;background:linear-gradient(135deg,var(--accent),var(--accent-d));
+    color:#fff;border-radius:16px;padding:18px;text-align:center;margin-bottom:14px;
+  }
+  .done-banner.show{display:block}
+  .done-banner b{font-size:16px}
+  footer{
+    position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);
+    padding:10px 14px;display:flex;gap:10px;align-items:center;justify-content:space-between;
+    max-width:560px;margin:0 auto;
+  }
+  .f-txt{font-size:12.5px;color:var(--sub)}
+  .reset{background:none;border:1px solid var(--line);color:var(--sub);
+    padding:8px 14px;border-radius:10px;font-size:12.5px;cursor:pointer}
+  .reset:active{background:var(--bg)}
+</style>
+</head>
+<body>
+<header>
+  <h1>ゼオスキン セラピューティック</h1>
+  <p>おうち確認ガイド</p>
+  <div class="bar-wrap"><div class="bar" id="bar"></div></div>
+  <div class="bar-txt"><span id="cnt">0</span> / <span id="tot">0</span> 項目を確認</div>
+</header>
+
+<main>
+  <div class="lead">
+    動画を見ながら各手順を確認し、チェックを入れてください。チェックはこのスマホに自動保存されるので、途中で閉じても大丈夫です。わからないことがあれば次回来院時にご相談ください。
+  </div>
+
+  <div class="done-banner" id="doneBanner">
+    <b>すべて確認できました 🌿</b><br>
+    <span style="font-size:13px">お疲れさまでした。次回来院時に気になる点があればスタッフへ。</span>
+  </div>
+
+  <!-- 1 -->
+  <section>
+    <div class="sec-head"><div class="sec-num">1</div><div class="sec-title">プログラムの全体像</div><span class="sec-done" data-done></span><span class="chev">▼</span></div>
+    <div class="body">
+      <label class="chk"><input type="checkbox"><span class="box"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 7"/></svg></span><span class="ctxt">4ヶ月使用→2ヶ月休止のサイクルを理解した</span></label>
+      <label class="chk"><input type="checkbox"><span class="box"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 7"/></svg></span><span class="ctxt">基本4製品（化粧水・朝クリーム・夜クリーム・トレチノイン）があることを確認した</span></label>
+    </div>
+  </section>
+
+  <!-- 2 -->
+  <section>
+    <div class="sec-head"><div class="sec-num">2</div><div class="sec-title">朝のお手入れ手順</div><span class="sec-done" data-done></span><span class="chev">▼</span></div>
+    <div class="body">
+      <div class="steps">
+        <ol>
+          <li>洗顔（自宅にあるもので可）</li>
+          <li>バランサートナー（化粧水）を塗る<span class="note">ピーリング成分入り。ピリピリ感が出ることがあります</span></li>
+          <li>ミラミン（朝の美容クリーム）を1プッシュ、顔全体に塗る<span class="note">塗った直後は白くなりますが、擦り込まなくて大丈夫。時間が経つと馴染みます</span></li>
+          <li>日焼け止めを塗る（肌に馴染んでから）<span class="note">市販品でOK。SPF50目安。屋外ではこまめに塗り直しを</span></li>
+        </ol>
+      </div>
+      <label class="chk"><input type="checkbox"><span class="box"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 7"/></svg></span><span class="ctxt">朝の手順（洗顔→化粧水→ミラミン→日焼け止め）を確認した</span></label>
+      <label class="chk"><input type="checkbox"><span class="box"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 7"/></svg></span><span class="ctxt">ミラミンは白くなっても擦り込まず、馴染むまで待つことを理解した</span></label>
+    </div>
+  </section>
+
+  <!-- 3 -->
+  <section>
+    <div class="sec-head"><div class="sec-num">3</div><div class="sec-title">夜のお手入れ手順</div><span class="sec-done" data-done></span><span class="chev">▼</span></div>
+    <div class="body">
+      <div class="steps">
+        <ol>
+          <li>洗顔・クレンジング</li>
+          <li>バランサートナー（化粧水）を塗る</li>
+          <li>ミラミックス＋トレチノインを1：1で混ぜて顔全体に塗る<span class="note">ミラミックスを半プッシュ（出し切らない程度）に対し、同量のトレチノインが目安</span></li>
+        </ol>
+      </div>
+      <label class="chk"><input type="checkbox"><span class="box"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 7"/></svg></span><span class="ctxt">夜の手順（洗顔→化粧水→ミラミックス＋トレチノイン混合）を確認した</span></label>
+      <label class="chk"><input type="checkbox"><span class="box"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 7"/></svg></span><span class="ctxt">ミラミックスとトレチノインを1：1の割合で手のひらで混ぜてから塗ることを理解した</span></label>
+      <label class="chk"><input type="checkbox"><span class="box"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 7"/></svg></span><span class="ctxt">トレチノインは冷蔵庫で保管し、製造から3ヶ月以内に使い切ることを確認した</span></label>
+    </div>
+  </section>
+
+  <!-- 4 -->
+  <section>
+    <div class="sec-head"><div class="sec-num">4</div><div class="sec-title">副反応と量の調整方法</div><span class="sec-done" data-done></span><span class="chev">▼</span></div>
+    <div class="body">
+      <div class="warn">トレチノインによる皮むけ・赤み・ヒリヒリ感は<b>正常な反応</b>です。最初の数週間に出やすいです。</div>
+      <label class="chk"><input type="checkbox"><span class="box"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 7"/></svg></span><span class="ctxt">皮むけ・赤み・ヒリヒリは正常な反応と理解した</span></label>
+      <label class="chk"><input type="checkbox"><span class="box"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 7"/></svg></span><span class="ctxt">症状に応じてトレチノインの量を自分で調整してよいことを理解した<span class="sub">辛い時は量を減らす。1ヶ月後も皮むけが全くない時は少し増やしてよい</span></span></label>
+      <div class="warn">📌 効果が出にくいと感じる場合：トレチノインの使用量が少なくなっていないか確認してください。トレチノイン5g（1本）が1ヶ月の目安です。次回来院時に残量をスタッフにお伝えください。</div>
+      <label class="chk"><input type="checkbox"><span class="box"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 7"/></svg></span><span class="ctxt">トレチノイン5g＝1本が1ヶ月目安であることを確認した</span></label>
+      <label class="chk"><input type="checkbox"><span class="box"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 7"/></svg></span><span class="ctxt">効果が出にくい時は使用量が少なくないか確認することを理解した</span></label>
+    </div>
+  </section>
+
+  <!-- 4b アレルギー -->
+  <section>
+    <div class="sec-head"><div class="sec-num">!</div><div class="sec-title">アレルギー反応について</div><span class="sec-done" data-done></span><span class="chev">▼</span></div>
+    <div class="body">
+      <div class="warn">
+        <b>トレチノイン</b>：赤み・カサカサ・皮むけ → 正常な反応<br>
+        <b>トレチノイン</b>：水疱・汁が出るなど激しい反応 → アレルギーの可能性<br>
+        <b>ミラミン・ミラミックス</b>：赤くなる → アレルギーの可能性<br>
+        アレルギーが疑われる場合は使用を中止し、化粧品を持参の上ご相談ください。
+      </div>
+      <label class="chk"><input type="checkbox"><span class="box"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 7"/></svg></span><span class="ctxt">トレチノインの水疱・汁など激しい反応はアレルギーの可能性があると理解した</span></label>
+      <label class="chk"><input type="checkbox"><span class="box"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 7"/></svg></span><span class="ctxt">ミラミン・ミラミックスで赤くなる場合はアレルギーのため使用中止・来院することを確認した</span></label>
+      <div class="warn">心配な方へ：最初に腕など皮膚の薄い部分に数日塗ってみて、アレルギー反応が出ないか確認してから顔に使用を開始してください。パッチテスト用少量品もご用意しています（ハイドロキノン：1,800円／トレチノイン：1,800円）。ご希望の方はスタッフにお申し付けください。</div>
+      <label class="chk"><input type="checkbox"><span class="box"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 7"/></svg></span><span class="ctxt">心配な方はまず腕でパッチテストを行ってから顔に使い始めることを理解した</span></label>
+    </div>
+  </section>
+
+  <!-- 5 -->
+  <section>
+    <div class="sec-head"><div class="sec-num">5</div><div class="sec-title">他のスキンケアとの併用</div><span class="sec-done" data-done></span><span class="chev">▼</span></div>
+    <div class="body">
+      <label class="chk"><input type="checkbox"><span class="box"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 7"/></svg></span><span class="ctxt">使用中は市販の他の保湿剤・クリーム・美容液は使わないことを理解した<span class="sub">ゼオスキンの効果が出にくくなります</span></span></label>
+      <label class="chk"><input type="checkbox"><span class="box"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 7"/></svg></span><span class="ctxt">乾燥が辛い時は市販品でなくゼオスキンのRCクリームで保湿することを理解した<span class="sub">トレチノインの反応を抑える働きがあり、副反応を抑えたい方は最初から併用がおすすめです</span></span></label>
+    </div>
+  </section>
+
+  <!-- 6 -->
+  <section>
+    <div class="sec-head"><div class="sec-num">6</div><div class="sec-title">次回来院と持ち物</div><span class="sec-done" data-done></span><span class="chev">▼</span></div>
+    <div class="body">
+      <label class="chk"><input type="checkbox"><span class="box"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 7"/></svg></span><span class="ctxt">次回は約1ヶ月後（水・日曜日以外）に来院することを確認した</span></label>
+      <label class="chk"><input type="checkbox"><span class="box"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 7"/></svg></span><span class="ctxt">来院時にトレチノインの残量を確認しておくことを理解した</span></label>
+      <label class="chk"><input type="checkbox"><span class="box"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 7"/></svg></span><span class="ctxt">診察日程の用紙を毎回持参することを確認した（診察券と一緒に受付へ）</span></label>
+      <label class="chk"><input type="checkbox"><span class="box"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 7"/></svg></span><span class="ctxt">来院時は画像診断機で写真を撮る前に、院内で日焼け止めを落としてもらうことを理解した</span></label>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <span class="f-txt">チェックは自動保存されます</span>
+  <button class="reset" id="reset">リセット</button>
+</footer>
+
+<script>
+  var KEY = 'zeoskin_check_v3';
+  var boxes = Array.prototype.slice.call(document.querySelectorAll('label.chk input'));
+  boxes.forEach(function(b,i){ b.dataset.idx = i; });
+  document.getElementById('tot').textContent = boxes.length;
+
+  function save(){
+    var state = boxes.map(function(b){ return b.checked ? 1 : 0; });
+    try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){}
+  }
+  function load(){
+    try{
+      var s = JSON.parse(localStorage.getItem(KEY) || '[]');
+      boxes.forEach(function(b,i){ b.checked = !!s[i]; });
+    }catch(e){}
+  }
+  function updateSectionTags(){
+    document.querySelectorAll('section').forEach(function(sec){
+      var ins = sec.querySelectorAll('label.chk input');
+      if(!ins.length) return;
+      var done = 0; ins.forEach(function(x){ if(x.checked) done++; });
+      var tag = sec.querySelector('[data-done]');
+      if(done === ins.length){ tag.textContent = '完了'; tag.style.display='inline'; }
+      else if(done > 0){ tag.textContent = done + '/' + ins.length; tag.style.display='inline'; }
+      else { tag.style.display='none'; }
+    });
+  }
+  function refresh(){
+    var done = boxes.filter(function(b){ return b.checked; }).length;
+    var pct = boxes.length ? Math.round(done/boxes.length*100) : 0;
+    document.getElementById('bar').style.width = pct + '%';
+    document.getElementById('cnt').textContent = done;
+    document.getElementById('doneBanner').classList.toggle('show', done === boxes.length && boxes.length>0);
+    updateSectionTags();
+  }
+  boxes.forEach(function(b){
+    b.addEventListener('change', function(){ save(); refresh(); });
+  });
+  document.querySelectorAll('.sec-head').forEach(function(h){
+    h.addEventListener('click', function(){ h.parentElement.classList.toggle('collapsed'); });
+  });
+  document.getElementById('reset').addEventListener('click', function(){
+    if(confirm('チェックをすべてリセットしますか？')){
+      boxes.forEach(function(b){ b.checked = false; });
+      save(); refresh();
+    }
+  });
+  load(); refresh();
+</script>
+</body>
+</html>
